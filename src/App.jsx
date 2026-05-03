@@ -581,6 +581,17 @@ function RehearsalPoster({ data, theme }) {
 
 
 function Editor({ data, update, updateSection, updateLayer, setData, onTranspose }) {
+  const moveSection = (index, direction) => {
+    if (index + direction < 0 || index + direction >= data.sections.length) return;
+    setData(d => {
+      const newSections = [...d.sections];
+      const temp = newSections[index];
+      newSections[index] = newSections[index + direction];
+      newSections[index + direction] = temp;
+      return { ...d, sections: newSections };
+    });
+  };
+
   return (
     <>
       <div className="rounded-3xl border border-zinc-300/20 bg-white/80 p-4 shadow-sm dark:bg-zinc-900/80">
@@ -611,11 +622,17 @@ function Editor({ data, update, updateSection, updateLayer, setData, onTranspose
           {data.sections.map((s, index) => (
             <div key={s.id} className="rounded-2xl border border-zinc-300/30 bg-white/60 p-3 dark:bg-black/20">
               <div className="mb-3 flex items-center justify-between gap-2">
-                <div className="font-black">#{index + 1}</div>
-                <select value={s.color} onChange={(e) => updateSection(s.id, { color: e.target.value })} className="rounded-lg bg-white px-2 py-1 text-sm text-zinc-900">
-                  {Object.keys(colorMap).map((key) => <option key={key} value={key}>{colorMap[key].name}</option>)}
-                </select>
-                <button onClick={() => setData((d) => ({ ...d, sections: d.sections.filter((x) => x.id !== s.id) }))} className="rounded-lg bg-red-600 px-2 py-1 text-white"><Icon name="trash" className="h-4 w-4" /></button>
+                <div className="flex items-center gap-1">
+                  <div className="font-black mr-2">#{index + 1}</div>
+                  <button onClick={() => moveSection(index, -1)} disabled={index === 0} className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200 text-sm disabled:opacity-30 dark:bg-zinc-800 dark:text-zinc-100 hover:bg-zinc-300 dark:hover:bg-zinc-700" title="Subir sección">↑</button>
+                  <button onClick={() => moveSection(index, 1)} disabled={index === data.sections.length - 1} className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-200 text-sm disabled:opacity-30 dark:bg-zinc-800 dark:text-zinc-100 hover:bg-zinc-300 dark:hover:bg-zinc-700" title="Bajar sección">↓</button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <select value={s.color} onChange={(e) => updateSection(s.id, { color: e.target.value })} className="rounded-lg bg-white px-2 py-1 text-sm text-zinc-900">
+                    {Object.keys(colorMap).map((key) => <option key={key} value={key}>{colorMap[key].name}</option>)}
+                  </select>
+                  <button onClick={() => setData((d) => ({ ...d, sections: d.sections.filter((x) => x.id !== s.id) }))} className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-600 text-white hover:bg-red-500"><Icon name="trash" className="h-3 w-3" /></button>
+                </div>
               </div>
               <div className="grid gap-3 md:grid-cols-4">
                 <Field label="Nombre" value={s.name} onChange={(v) => updateSection(s.id, { name: v })} className="md:col-span-2" />
