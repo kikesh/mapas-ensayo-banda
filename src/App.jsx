@@ -73,13 +73,14 @@ function emptySection() {
     chords: 'C | F | Am | G',
     color: 'verse',
     lead: 'Voz principal',
+    cue: '',
     notes: 'Mantener pulso y preparar siguiente entrada.',
     layers: { ...defaultLayers },
   };
 }
 
-function section(name, bars, chords, color, lead, notes, layers = {}) {
-  return { id: makeId(), name, bars, chords, color, lead, notes, layers: { ...defaultLayers, ...layers } };
+function section(name, bars, chords, color, lead, notes, layers = {}, cue = '') {
+  return { id: makeId(), name, bars, chords, color, lead, notes, cue, layers: { ...defaultLayers, ...layers } };
 }
 
 const blankPreset = {
@@ -92,6 +93,7 @@ const blankPreset = {
   practicalKey: 'C · F · Am · G',
   duration: '3:30 aprox.',
   source: 'Título / enlace / audio',
+  lyrics: '',
   sections: [emptySection()],
   rehearsalNotes: [
     'Definir quién da la señal de entrada.',
@@ -116,14 +118,15 @@ const fitoPreset = {
   practicalKey: 'Em · D · Am · C · G',
   duration: '4:45 aprox.',
   source: 'Título reconocido / versión de estudio',
+  lyrics: 'Un, dos, tres, va!\n\nNo quiero ver el sol, no quiero amanecer...\n(Pega aquí el resto de la letra completa de tu canción)',
   sections: [
-    section('Intro', 4, 'Em | D | Am | C', 'intro', 'Guitarra / batería', 'Preparar entrada de voz. Dinámica contenida.', { voz: 'baja', bajo: 'baja', bateria: 'baja', full: 'baja' }),
-    section('Estrofa A', 8, 'Em | D | Am | C | Em | D | Am | C', 'verse', 'Voz principal', 'No sobrecargar. Dejar respirar la letra.', { voz: 'alta' }),
-    section('Pre', 8, 'Em | G | D | C | Em | G | D | C', 'pre', 'Voz + batería', 'Subir intención sin adelantar el estribillo.', { voz: 'alta', bateria: 'alta' }),
-    section('Estribillo', 8, 'G | D | Em | C | G | D | Em | C', 'chorus', 'Toda la banda', 'Abrir dinámica. Coros si los hay, aquí.', { voz: 'alta', armonia: 'alta', bajo: 'alta', bateria: 'alta', full: 'alta' }),
-    section('Solo / puente', 8, 'Em | D | C | G | Em | D | C | G', 'solo', 'Guitarra solista', 'La banda sostiene. No tapar el solo.', { voz: 'baja', bajo: 'alta', bateria: 'alta', full: 'alta' }),
-    section('Estribillo final', 16, 'G | D | Em | C · repetir', 'final', 'Voz + banda completa', 'Clímax. Acordar número de vueltas.', { voz: 'alta', armonia: 'alta', bajo: 'alta', bateria: 'alta', full: 'alta' }),
-    section('Cierre', 4, 'Em | D | C | Em', 'outro', 'Batería / director', 'Corte seco o acorde sostenido.', { voz: 'baja', bateria: 'alta' }),
+    section('Intro', 4, 'Em | D | Am | C', 'intro', 'Guitarra / batería', 'Preparar entrada de voz. Dinámica contenida.', { voz: 'baja', bajo: 'baja', bateria: 'baja', full: 'baja' }, 'Un, dos, tres, va!'),
+    section('Estrofa A', 8, 'Em | D | Am | C | Em | D | Am | C', 'verse', 'Voz principal', 'No sobrecargar. Dejar respirar la letra.', { voz: 'alta' }, 'No quiero ver el sol...'),
+    section('Pre', 8, 'Em | G | D | C | Em | G | D | C', 'pre', 'Voz + batería', 'Subir intención sin adelantar el estribillo.', { voz: 'alta', bateria: 'alta' }, 'Y no me importa si...'),
+    section('Estribillo', 8, 'G | D | Em | C | G | D | Em | C', 'chorus', 'Toda la banda', 'Abrir dinámica. Coros si los hay, aquí.', { voz: 'alta', armonia: 'alta', bajo: 'alta', bateria: 'alta', full: 'alta' }, 'Antes de que cuente diez...'),
+    section('Solo / puente', 8, 'Em | D | C | G | Em | D | C | G', 'solo', 'Guitarra solista', 'La banda sostiene. No tapar el solo.', { voz: 'baja', bajo: 'alta', bateria: 'alta', full: 'alta' }, '(Solo principal)'),
+    section('Estribillo final', 16, 'G | D | Em | C · repetir', 'final', 'Voz + banda completa', 'Clímax. Acordar número de vueltas.', { voz: 'alta', armonia: 'alta', bajo: 'alta', bateria: 'alta', full: 'alta' }, 'Antes de que cuente diez... (x2)'),
+    section('Cierre', 4, 'Em | D | C | Em', 'outro', 'Batería / director', 'Corte seco o acorde sostenido.', { voz: 'baja', bateria: 'alta' }, ''),
   ],
   rehearsalNotes: [
     'Mantener pulso estable: el tema puede tender a acelerarse.',
@@ -429,7 +432,7 @@ function TransposeBox({ onTranspose }) {
   );
 }
 
-function RehearsalSheet({ data, theme }) {
+function RehearsalSheet({ data, theme, showLyrics }) {
   const totalBars = data.sections.reduce((sum, s) => sum + Number(s.bars || 0), 0);
   const ranges = useMemo(() => getRanges(data.sections), [data.sections]);
   const dark = theme === 'dark';
@@ -483,7 +486,10 @@ function RehearsalSheet({ data, theme }) {
               return (
                 <tr key={s.id} className={cls('border-t', dark ? 'border-zinc-800' : 'border-zinc-200')}>
                   <td className="p-2 font-black">{i + 1}</td>
-                  <td className="p-2"><span className={cls('mr-2 inline-block h-3 w-3 rounded-full', c.chip)} /> <b>{s.name}</b></td>
+                  <td className="p-2">
+                    <span className={cls('mr-2 inline-block h-3 w-3 rounded-full', c.chip)} /> <b>{s.name}</b>
+                    {s.cue && <div className="mt-1 text-xs italic opacity-70">"{s.cue}"</div>}
+                  </td>
                   <td className="p-2">{s.bars} <span className="opacity-60">({r.start}-{r.end})</span></td>
                   <td className="p-2 font-mono font-black tracking-wide">{s.chords}</td>
                   <td className="p-2 font-semibold">{s.lead}</td>
@@ -503,11 +509,19 @@ function RehearsalSheet({ data, theme }) {
         <div><b>Fuente:</b> {data.source}</div>
         <div><b>Uso:</b> ensayo / reparto / atril</div>
       </div>
+      {showLyrics && data.lyrics && (
+        <div className={cls('mt-8 border-t pt-8 print:break-before-page', dark ? 'border-zinc-800' : 'border-zinc-200')}>
+          <h2 className="mb-4 text-2xl font-black uppercase tracking-widest">Letra completa</h2>
+          <div className="columns-1 gap-8 sm:columns-2 lg:columns-3 text-sm leading-relaxed whitespace-pre-wrap font-medium">
+            {data.lyrics}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function RehearsalPoster({ data, theme }) {
+function RehearsalPoster({ data, theme, showLyrics }) {
   const totalBars = data.sections.reduce((sum, s) => sum + Number(s.bars || 0), 0);
   const ranges = useMemo(() => getRanges(data.sections), [data.sections]);
   const dark = theme === 'dark';
@@ -539,7 +553,11 @@ function RehearsalPoster({ data, theme }) {
             return (
               <div key={s.id} className={cls('grid grid-cols-[54px_240px_120px_1fr] items-stretch overflow-hidden rounded-xl border', c.border, dark ? c.bg : c.lightBg)}>
                 <div className={cls('flex items-center justify-center text-3xl font-black', dark ? 'bg-black/35' : 'bg-zinc-100')}>{i + 1}</div>
-                <div className="p-3"><div className="text-xl font-black uppercase tracking-wide">{s.name}</div><div className="text-xs opacity-80">{s.bars} compases - {r.start}-{r.end}</div></div>
+                <div className="p-3">
+                  <div className="text-xl font-black uppercase tracking-wide">{s.name}</div>
+                  <div className="text-xs opacity-80">{s.bars} compases - {r.start}-{r.end}</div>
+                  {s.cue && <div className="mt-1 text-[11px] italic opacity-90 leading-tight">"{s.cue}"</div>}
+                </div>
                 <div className={cls('flex items-center justify-center border-l border-r px-2 text-center text-sm font-bold', dark ? 'border-white/20' : 'border-zinc-200')}>{s.lead}</div>
                 <div className="flex items-center px-4 text-2xl font-black tracking-widest">{s.chords}</div>
               </div>
@@ -575,6 +593,14 @@ function RehearsalPoster({ data, theme }) {
         <InfoBox title="Paleta armónica" items={splitPalette(data.practicalKey).slice(0, 8)} dark={dark} marker="-" />
       </div>
       <div className={cls('mt-4 rounded-2xl border p-3 text-center text-xl font-black uppercase tracking-[0.25em]', dark ? 'border-amber-400/50 bg-black/25 text-amber-100' : 'border-zinc-300 bg-white text-zinc-900')}>Total: {totalBars} compases aprox. - estructura clara - ensayo eficiente</div>
+      {showLyrics && data.lyrics && (
+        <div className={cls('mt-8 border-t pt-8 print:break-before-page', dark ? 'border-white/10' : 'border-zinc-300')}>
+          <h2 className="mb-4 text-center text-2xl font-black uppercase tracking-[0.2em] opacity-80">Letra completa</h2>
+          <div className="columns-1 gap-8 sm:columns-2 lg:columns-3 text-sm leading-relaxed whitespace-pre-wrap font-medium">
+            {data.lyrics}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -609,6 +635,8 @@ function Editor({ data, update, updateSection, updateLayer, setData, onTranspose
           <Field label="Paleta armónica" value={data.practicalKey} onChange={(v) => update({ practicalKey: v })} />
           <Field label="Fuente" value={data.source} onChange={(v) => update({ source: v })} />
         </div>
+        <h2 className="mb-3 mt-6 text-lg font-black">Letra completa (opcional)</h2>
+        <TextArea label="Pega aquí la letra entera para añadirla al mapa al imprimir" value={data.lyrics || ''} onChange={(v) => update({ lyrics: v })} />
         <div className="mt-4"><TransposeBox onTranspose={onTranspose} /></div>
         <h2 className="mb-3 mt-6 text-lg font-black">Notas de ensayo</h2>
         <TextArea label="Una nota por línea" value={data.rehearsalNotes.join('\n')} onChange={(v) => update({ rehearsalNotes: v.split('\n').filter(Boolean) })} />
@@ -639,7 +667,8 @@ function Editor({ data, update, updateSection, updateLayer, setData, onTranspose
                 <Field label="Compases" value={String(s.bars)} onChange={(v) => updateSection(s.id, { bars: Number(v) || 0 })} />
                 <Field label="Quién manda" value={s.lead} onChange={(v) => updateSection(s.id, { lead: v })} />
                 <Field label="Acordes" value={s.chords} onChange={(v) => updateSection(s.id, { chords: v })} className="md:col-span-3" />
-                <Field label="Nota" value={s.notes} onChange={(v) => updateSection(s.id, { notes: v })} />
+                <Field label="Nota / Observaciones" value={s.notes} onChange={(v) => updateSection(s.id, { notes: v })} className="md:col-span-2" />
+                <Field label="Frase clave (letra de entrada)" value={s.cue || ''} onChange={(v) => updateSection(s.id, { cue: v })} className="md:col-span-2" />
               </div>
               <div className="mt-3 grid grid-cols-5 gap-2">
                 {layerLabels.map(([key, label]) => <label key={key} className="text-xs font-bold uppercase opacity-80">{label}<select value={(s.layers && s.layers[key]) || 'media'} onChange={(e) => updateLayer(s.id, key, e.target.value)} className="mt-1 w-full rounded-lg bg-white px-2 py-1 text-zinc-900"><option value="baja">baja</option><option value="media">media</option><option value="alta">alta</option></select></label>)}
@@ -698,7 +727,7 @@ function TestsPanel({ selfTests }) {
   return <div className="lg:col-span-2 rounded-3xl border border-zinc-300/20 bg-white/80 p-4 shadow-sm dark:bg-zinc-900/80"><h2 className="mb-3 text-lg font-black">Tests internos</h2><p className="mb-4 text-sm opacity-70">Comprueban normalización del JSON, cálculos y transposición.</p><div className="space-y-2">{selfTests.map((test) => <div key={test.name} className={cls('rounded-xl border p-3 font-bold', test.pass ? 'border-emerald-400 bg-emerald-50 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100' : 'border-red-400 bg-red-50 text-red-900 dark:bg-red-950 dark:text-red-100')}>{test.pass ? 'OK' : 'ERROR'} - {test.name}</div>)}</div></div>;
 }
 
-function Toolbar({ theme, setTheme, outputMode, setOutputMode, setData, exportJSON }) {
+function Toolbar({ theme, setTheme, outputMode, setOutputMode, showLyrics, setShowLyrics, setData, exportJSON }) {
   return (
     <div className="no-print mx-auto mb-4 flex max-w-7xl flex-wrap items-center justify-between gap-3 rounded-3xl border border-zinc-300/20 bg-white/70 p-3 shadow-sm backdrop-blur dark:bg-zinc-900/70">
       <div><h1 className="text-xl font-black">Generador de Mapas de Ensayo para Banda</h1><p className="text-sm opacity-70">Edita la canción, pega JSON, transpone y exporta.</p></div>
@@ -707,7 +736,8 @@ function Toolbar({ theme, setTheme, outputMode, setOutputMode, setData, exportJS
         <button onClick={() => setData(cloneSong(fitoPreset))} className="rounded-xl bg-zinc-200 px-3 py-2 text-sm font-bold text-zinc-900 hover:bg-zinc-300">Ejemplo Fito</button>
         <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="rounded-xl bg-amber-500 px-3 py-2 text-sm font-black text-black hover:bg-amber-400"><Icon name={theme === 'dark' ? 'sun' : 'moon'} className="mr-1 h-4 w-4" /> Tema</button>
         <button onClick={() => setOutputMode(outputMode === 'poster' ? 'sheet' : 'poster')} className="rounded-xl bg-purple-600 px-3 py-2 text-sm font-bold text-white hover:bg-purple-500"><Icon name="file" className="mr-1 h-4 w-4" /> {outputMode === 'poster' ? 'Hoja A4' : 'Póster'}</button>
-        <button onClick={() => window.print()} className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-bold text-white hover:bg-blue-500"><Icon name="printer" className="mr-1 h-4 w-4" /> PDF/Imprimir</button>
+        <button onClick={() => setShowLyrics(!showLyrics)} className={cls('rounded-xl px-3 py-2 text-sm font-bold', showLyrics ? 'bg-indigo-500 text-white hover:bg-indigo-400' : 'bg-zinc-200 text-zinc-900 hover:bg-zinc-300')}><Icon name="clipboard" className="mr-1 h-4 w-4" /> Letra</button>
+        <button onClick={() => window.print()} className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-bold text-white hover:bg-blue-500"><Icon name="printer" className="mr-1 h-4 w-4" /> PDF</button>
         <button onClick={exportJSON} className="rounded-xl bg-emerald-600 px-3 py-2 text-sm font-bold text-white hover:bg-emerald-500"><Icon name="download" className="mr-1 h-4 w-4" /> JSON</button>
       </div>
     </div>
@@ -723,6 +753,7 @@ export default function App() {
   const [theme, setTheme] = useState('dark');
   const [tab, setTab] = useState('edit');
   const [outputMode, setOutputMode] = useState('poster');
+  const [showLyrics, setShowLyrics] = useState(false);
   const [jsonText, setJsonText] = useState('');
   const [copied, setCopied] = useState(false);
   const selfTests = useMemo(() => runSelfTests(), []);
@@ -761,7 +792,7 @@ export default function App() {
   };
   return (
     <div className={cls('min-h-screen p-4', theme === 'dark' ? 'dark bg-zinc-950 text-zinc-100' : 'bg-zinc-100 text-zinc-950')}>
-      <Toolbar theme={theme} setTheme={setTheme} outputMode={outputMode} setOutputMode={setOutputMode} setData={setData} exportJSON={exportJSON} />
+      <Toolbar theme={theme} setTheme={setTheme} outputMode={outputMode} setOutputMode={setOutputMode} showLyrics={showLyrics} setShowLyrics={setShowLyrics} setData={setData} exportJSON={exportJSON} />
       <div className="no-print mx-auto mb-4 flex max-w-7xl flex-wrap gap-2">
         <TabButton active={tab === 'edit'} onClick={() => setTab('edit')} icon="pencil" label="Editar" />
         <TabButton active={tab === 'ai'} onClick={() => setTab('ai')} icon="wand" label="IA / JSON" />
@@ -776,7 +807,7 @@ export default function App() {
         </div>
       ) : null}
       <div className={cls('mx-auto overflow-auto rounded-3xl', tab === 'preview' ? 'max-w-[1040px]' : 'max-w-7xl')}>
-        {outputMode === 'poster' ? <RehearsalPoster data={data} theme={theme} /> : <RehearsalSheet data={data} theme={theme} />}
+        {outputMode === 'poster' ? <RehearsalPoster data={data} theme={theme} showLyrics={showLyrics} /> : <RehearsalSheet data={data} theme={theme} showLyrics={showLyrics} />}
       </div>
     </div>
   );
