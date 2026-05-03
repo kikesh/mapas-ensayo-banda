@@ -27,14 +27,12 @@ body {
     display: none !important;
   }
   #poster {
-    transform: scale(0.72);
-    transform-origin: top left;
+    zoom: 0.72;
     width: 980px !important;
     box-shadow: none !important;
   }
   #sheet {
-    transform: scale(0.94);
-    transform-origin: top left;
+    zoom: 0.94;
     width: 980px !important;
     box-shadow: none !important;
   }

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 const defaultLayers = {
   voz: 'media',
@@ -758,6 +758,21 @@ export default function App() {
   const [showLyrics, setShowLyrics] = useState(false);
   const [jsonText, setJsonText] = useState('');
   const [copied, setCopied] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  useEffect(() => {
+    const handleBeforePrint = () => setIsPrinting(true);
+    const handleAfterPrint = () => setIsPrinting(false);
+    window.addEventListener('beforeprint', handleBeforePrint);
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint);
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
+  }, []);
+
+  const effectiveTheme = isPrinting ? 'light' : theme;
+
   const selfTests = useMemo(() => runSelfTests(), []);
   const analysisPrompt = useMemo(() => buildSongRequestPrompt({ title: '[título]', artist: '[artista]', link: '[opcional]', version: 'versión de estudio / oficial', key: 'original o práctica para banda', notes: '[opcional]' }), []);
   const update = (patch) => setData((d) => ({ ...d, ...patch }));
@@ -793,8 +808,8 @@ export default function App() {
     URL.revokeObjectURL(url);
   };
   return (
-    <div className={cls('min-h-screen p-4', theme === 'dark' ? 'dark bg-zinc-950 text-zinc-100' : 'bg-zinc-100 text-zinc-950')}>
-      <Toolbar theme={theme} setTheme={setTheme} outputMode={outputMode} setOutputMode={setOutputMode} showLyrics={showLyrics} setShowLyrics={setShowLyrics} setData={setData} exportJSON={exportJSON} />
+    <div className={cls('min-h-screen p-4', effectiveTheme === 'dark' ? 'dark bg-zinc-950 text-zinc-100' : 'bg-zinc-100 text-zinc-950')}>
+      <Toolbar theme={effectiveTheme} setTheme={setTheme} outputMode={outputMode} setOutputMode={setOutputMode} showLyrics={showLyrics} setShowLyrics={setShowLyrics} setData={setData} exportJSON={exportJSON} />
       <div className="no-print mx-auto mb-4 flex max-w-7xl flex-wrap gap-2">
         <TabButton active={tab === 'edit'} onClick={() => setTab('edit')} icon="pencil" label="Editar" />
         <TabButton active={tab === 'ai'} onClick={() => setTab('ai')} icon="wand" label="IA / JSON" />
@@ -809,7 +824,7 @@ export default function App() {
         </div>
       ) : null}
       <div className={cls('mx-auto overflow-auto rounded-3xl', tab === 'preview' ? 'max-w-[1040px]' : 'max-w-7xl')}>
-        {outputMode === 'poster' ? <RehearsalPoster data={data} theme={theme} showLyrics={showLyrics} /> : <RehearsalSheet data={data} theme={theme} showLyrics={showLyrics} />}
+        {outputMode === 'poster' ? <RehearsalPoster data={data} theme={effectiveTheme} showLyrics={showLyrics} /> : <RehearsalSheet data={data} theme={effectiveTheme} showLyrics={showLyrics} />}
       </div>
     </div>
   );
