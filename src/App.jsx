@@ -396,7 +396,7 @@ function TextArea({ label, value, onChange }) {
 
 function HeaderCard({ icon, label, value, theme }) {
   return (
-    <div className={cls('flex items-center gap-3 rounded-2xl border p-3', theme === 'dark' ? 'border-amber-400/50 bg-black/30' : 'border-zinc-300 bg-white')}>
+    <div className={cls('flex items-center gap-3 rounded-2xl border p-3 print:break-inside-avoid', theme === 'dark' ? 'border-amber-400/50 bg-black/30' : 'border-zinc-300 bg-white')}>
       <Icon name={icon} className={cls('h-6 w-6 shrink-0 text-xl', theme === 'dark' ? 'text-amber-300' : 'text-zinc-800')} />
       <div className="min-w-0">
         <div className="text-[10px] font-black uppercase tracking-widest opacity-70">{label}</div>
@@ -408,7 +408,7 @@ function HeaderCard({ icon, label, value, theme }) {
 
 function InfoBox({ title, items, dark, marker }) {
   return (
-    <div className={cls('rounded-2xl border p-4', dark ? 'border-amber-400/50 bg-black/25' : 'border-zinc-300 bg-white')}>
+    <div className={cls('rounded-2xl border p-4 print:break-inside-avoid', dark ? 'border-amber-400/50 bg-black/25' : 'border-zinc-300 bg-white')}>
       <div className={cls('mb-2 text-lg font-black uppercase tracking-widest', dark ? 'text-amber-200' : 'text-amber-700')}>{title}</div>
       <ul className="space-y-1 text-sm">{(items || []).map((n, i) => <li key={i}>{marker} {n}</li>)}</ul>
     </div>
@@ -450,7 +450,7 @@ function RehearsalSheet({ data, theme, showLyrics }) {
           <h2 className={cls('mt-1 text-2xl font-extrabold', dark ? 'text-amber-300' : 'text-amber-700')}>{data.artist}</h2>
           <p className="mt-1 text-sm opacity-70">{data.subtitle}</p>
         </div>
-        <div className={cls('grid min-w-[310px] grid-cols-2 gap-2 rounded-2xl border p-3 text-sm', soft)}>
+        <div className={cls('grid min-w-[310px] grid-cols-2 gap-2 rounded-2xl border p-3 text-sm print:break-inside-avoid', soft)}>
           <div><b>Tempo:</b> {data.tempo}</div>
           <div><b>Compás:</b> {data.meter}</div>
           <div><b>Tono:</b> {data.key}</div>
@@ -458,7 +458,7 @@ function RehearsalSheet({ data, theme, showLyrics }) {
           <div className="col-span-2"><b>Acordes base:</b> {data.practicalKey}</div>
         </div>
       </div>
-      <div className={cls('mb-5 rounded-2xl border p-4', panel)}>
+      <div className={cls('mb-5 rounded-2xl border p-4 print:break-inside-avoid', panel)}>
         <h3 className="mb-3 text-sm font-black uppercase tracking-[0.25em] opacity-70">Estructura global</h3>
         <div className="flex flex-wrap items-center gap-2">
           {data.sections.map((s, i) => (
@@ -486,7 +486,7 @@ function RehearsalSheet({ data, theme, showLyrics }) {
               const c = getColor(s.color);
               const r = ranges[i] || { start: 0, end: 0 };
               return (
-                <tr key={s.id} className={cls('border-t', dark ? 'border-zinc-800' : 'border-zinc-200')}>
+                <tr key={s.id} className={cls('border-t print:break-inside-avoid', dark ? 'border-zinc-800' : 'border-zinc-200')}>
                   <td className="p-2 font-black">{i + 1}</td>
                   <td className="p-2">
                     <span className={cls('mr-2 inline-block h-3 w-3 rounded-full', c.chip)} /> <b>{s.name}</b>
@@ -506,7 +506,7 @@ function RehearsalSheet({ data, theme, showLyrics }) {
         <InfoBox title="Claves de ensayo" items={data.rehearsalNotes} dark={dark} marker="-" />
         <InfoBox title="Decisiones de banda" items={data.decisions} dark={dark} marker="[ ]" />
       </div>
-      <div className={cls('grid grid-cols-[1fr_1fr_1fr] gap-4 rounded-2xl border p-4', soft)}>
+      <div className={cls('grid grid-cols-[1fr_1fr_1fr] gap-4 rounded-2xl border p-4 print:break-inside-avoid', soft)}>
         <div><b>Total:</b> {totalBars} compases aprox.</div>
         <div><b>Fuente:</b> {data.source}</div>
         <div><b>Uso:</b> ensayo / reparto / atril</div>
@@ -546,14 +546,14 @@ function RehearsalPoster({ data, theme, showLyrics }) {
         <HeaderCard icon="music" label="Duración" value={data.duration} theme={theme} />
         <HeaderCard icon="file" label="Fuente" value={data.source} theme={theme} />
       </div>
-      <div className={cls('mb-4 rounded-2xl border p-3', dark ? 'border-amber-400/50 bg-black/25' : 'border-zinc-300 bg-white')}>
+      <div className={cls('mb-4 rounded-2xl border p-3 print:break-inside-avoid', dark ? 'border-amber-400/50 bg-black/25' : 'border-zinc-300 bg-white')}>
         <div className={cls('mb-2 text-center text-lg font-black uppercase tracking-[0.25em]', dark ? 'text-amber-200' : 'text-amber-700')}>Estructura por compases</div>
         <div className="space-y-2">
           {data.sections.map((s, i) => {
             const c = getColor(s.color);
             const r = ranges[i] || { start: 0, end: 0 };
             return (
-              <div key={s.id} className={cls('grid grid-cols-[54px_240px_120px_1fr] items-stretch overflow-hidden rounded-xl border', c.border, dark ? c.bg : c.lightBg)}>
+              <div key={s.id} className={cls('grid grid-cols-[54px_240px_120px_1fr] items-stretch overflow-hidden rounded-xl border print:break-inside-avoid', c.border, dark ? c.bg : c.lightBg)}>
                 <div className={cls('flex items-center justify-center text-3xl font-black', dark ? 'bg-black/35' : 'bg-zinc-100')}>{i + 1}</div>
                 <div className="p-3">
                   <div className="text-xl font-black uppercase tracking-wide">{s.name}</div>
@@ -567,7 +567,7 @@ function RehearsalPoster({ data, theme, showLyrics }) {
           })}
         </div>
       </div>
-      <div className="mb-4 grid grid-cols-[1.2fr_0.8fr] gap-4">
+      <div className="mb-4 grid grid-cols-[1.2fr_0.8fr] gap-4 print:break-inside-avoid">
         <div className={cls('rounded-2xl border p-3', dark ? 'border-amber-400/50 bg-black/25' : 'border-zinc-300 bg-white')}>
           <div className={cls('mb-2 text-center text-lg font-black uppercase tracking-[0.2em]', dark ? 'text-amber-200' : 'text-amber-700')}>Mapa de capas de la banda</div>
           <div className="overflow-hidden rounded-xl border border-white/15">
