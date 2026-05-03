@@ -458,7 +458,7 @@ function RehearsalSheet({ data, theme, showLyrics }) {
           <div className="col-span-2"><b>Acordes base:</b> {data.practicalKey}</div>
         </div>
       </div>
-      <div className={cls('mb-5 rounded-2xl border p-4 print:break-inside-avoid', panel)}>
+      <div className={cls('mb-5 rounded-2xl border p-4', panel)}>
         <h3 className="mb-3 text-sm font-black uppercase tracking-[0.25em] opacity-70">Estructura global</h3>
         <div className="flex flex-wrap items-center gap-2">
           {data.sections.map((s, i) => (
@@ -546,7 +546,7 @@ function RehearsalPoster({ data, theme, showLyrics }) {
         <HeaderCard icon="music" label="Duración" value={data.duration} theme={theme} />
         <HeaderCard icon="file" label="Fuente" value={data.source} theme={theme} />
       </div>
-      <div className={cls('mb-4 rounded-2xl border p-3 print:break-inside-avoid', dark ? 'border-amber-400/50 bg-black/25' : 'border-zinc-300 bg-white')}>
+      <div className={cls('mb-4 rounded-2xl border p-3', dark ? 'border-amber-400/50 bg-black/25' : 'border-zinc-300 bg-white')}>
         <div className={cls('mb-2 text-center text-lg font-black uppercase tracking-[0.25em]', dark ? 'text-amber-200' : 'text-amber-700')}>Estructura por compases</div>
         <div className="space-y-2">
           {data.sections.map((s, i) => {
@@ -567,7 +567,7 @@ function RehearsalPoster({ data, theme, showLyrics }) {
           })}
         </div>
       </div>
-      <div className="mb-4 grid grid-cols-[1.2fr_0.8fr] gap-4 print:break-inside-avoid">
+      <div className="mb-4 grid grid-cols-[1.2fr_0.8fr] gap-4">
         <div className={cls('rounded-2xl border p-3', dark ? 'border-amber-400/50 bg-black/25' : 'border-zinc-300 bg-white')}>
           <div className={cls('mb-2 text-center text-lg font-black uppercase tracking-[0.2em]', dark ? 'text-amber-200' : 'text-amber-700')}>Mapa de capas de la banda</div>
           <div className="overflow-hidden rounded-xl border border-white/15">
