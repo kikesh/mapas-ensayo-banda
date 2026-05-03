@@ -442,7 +442,7 @@ function RehearsalSheet({ data, theme, showLyrics }) {
   const panel = dark ? 'border-zinc-700 bg-zinc-900' : 'border-zinc-300 bg-white';
   const soft = dark ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-50 border-zinc-200';
   return (
-    <div id="sheet" className={cls('mx-auto w-[980px] rounded-[1.5rem] border p-8 shadow-2xl print:w-full print:rounded-none print:shadow-none', pageBg, dark ? 'border-zinc-800' : 'border-zinc-200')}>
+    <div id="sheet" className={cls('mx-auto w-[980px] rounded-[1.5rem] border p-8 shadow-2xl print:rounded-none print:shadow-none print:border-none', pageBg, dark ? 'border-zinc-800' : 'border-zinc-200')}>
       <div className="mb-5 flex items-start justify-between gap-6 border-b border-zinc-300/40 pb-4">
         <div>
           <div className="mb-1 text-xs font-black uppercase tracking-[0.35em] opacity-60">Hoja de ensayo A4</div>
@@ -530,7 +530,7 @@ function RehearsalPoster({ data, theme, showLyrics }) {
   const posterBg = dark ? 'bg-zinc-950 text-stone-100' : 'bg-[#faf8f1] text-zinc-900';
   const gridColumns = `140px repeat(${Math.max(data.sections.length, 1)}, minmax(56px, 1fr))`;
   return (
-    <div id="poster" className={cls('mx-auto w-[980px] rounded-[2rem] p-6 shadow-2xl print:w-full print:rounded-none print:shadow-none', posterBg)}>
+    <div id="poster" className={cls('mx-auto w-[980px] rounded-[2rem] p-6 shadow-2xl print:rounded-none print:shadow-none print:bg-transparent', posterBg)}>
       <div className="relative mb-4 text-center">
         <div className={cls('absolute left-4 top-8 h-[2px] w-36', dark ? 'bg-amber-400' : 'bg-amber-500')} />
         <div className={cls('absolute right-4 top-8 h-[2px] w-36', dark ? 'bg-amber-400' : 'bg-amber-500')} />
